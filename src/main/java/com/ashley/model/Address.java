@@ -1,14 +1,13 @@
 package com.ashley.model;
 
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -19,21 +18,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="user")
-public class User{
+@Table(name="address")
+public class Address{
 	@Id 
-	@Column(name="userId")
+	@Column(name="addressId")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	private String firstName;
-	private String lastName;
-	private String email;
-	private String username;
-	private String password;
-	private String contact;
-	private String SSN;
+	private String street;
+	private String apartmentNumber;
+	private String city;
+	private String state;
+	private String zipcode;
+	private String country;
 	
-	@OneToMany(mappedBy="id", cascade = {CascadeType.ALL})
-	private Set<Address> userAddress;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="userId")
+	private User user;
+	
 
 }

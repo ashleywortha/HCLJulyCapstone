@@ -30,8 +30,15 @@ public class UserService {
 	}
 	
 	public void updateUser(Integer id, User user) {
-		User userInDB =
+		User userInDB = 
 				repo.findById(id).get();
+				userInDB.setFirstName(user.getFirstName());
+				userInDB.setLastName(user.getLastName());
+				userInDB.setEmail(user.getEmail());
+				userInDB.setContact(user.getContact());
+				userInDB.setUsername(user.getUsername());
+				userInDB.setPassword(user.getPassword());
+				userInDB.setSSN(user.getSSN());
 				repo.save(userInDB);
 	}
 
