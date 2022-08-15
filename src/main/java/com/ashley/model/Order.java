@@ -34,7 +34,7 @@ public class Order {
 	private String status;
 	private String shippingAddress;
 	private String billingAddress;
-	//add reference to user table
+	
 	//need to add a way to store user payment information?
 	@ManyToMany(cascade= {CascadeType.ALL})
 	@JoinTable(name="ORDER_PRODUCT",
