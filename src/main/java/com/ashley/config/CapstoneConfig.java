@@ -33,8 +33,13 @@ public class CapstoneConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.csrf().disable();
-		http.authorizeRequests().antMatchers("/user/join").permitAll().and().authorizeRequests()
+		http.authorizeRequests().antMatchers("/user/register").permitAll().and().authorizeRequests()
+		.antMatchers("/user/login").permitAll()
 		.antMatchers("/user/**").authenticated().and().httpBasic();
+		
+//		.and().formLogin();
+		
+//		.and().formLogin(form -> form.loginPage("/login").permitAll());
 	}
 	
 	@Bean

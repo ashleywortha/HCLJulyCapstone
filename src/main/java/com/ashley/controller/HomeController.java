@@ -16,23 +16,10 @@
 //	@Autowired
 //	private UserService service;
 //	
-//	@GetMapping({"/", "registration"}) 
+//	@GetMapping({"/"}) 
 //	public String register(final Model model) {
-//		model.addAttribute("userForm", new User());
 //		return"registration";
 //
-//	}
-//	
-//	@PostMapping("/")
-//	public String userRegistration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult) {
-//		service.addUser(userForm);
-//		return "redirect:/login";
-//		//		if(bindingResult.hasErrors()) {
-////			model.addAttribute("register", user);
-////			return "account/register";
-////		} 
-////		service.addUser(user);
-////		return "/login";
 //	}
 //
 //}

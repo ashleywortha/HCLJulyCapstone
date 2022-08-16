@@ -4,8 +4,10 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,7 +55,7 @@ public class UserController {
 //		return new ResponseEntity<User>(HttpStatus.OK);
 //	}
 	
-	@PostMapping("/join")
+	@PostMapping("/register")
 	public String addUser(@RequestBody User user) {
 		user.setRoles(UserConstraint.DEFAULT_ROLE);//user
 		String encryptedPwd = passwordEncoder.encode(user.getPassword());
@@ -61,6 +63,33 @@ public class UserController {
 		service.addUser(user);
 		return("Hi " + user.getUsername() + " you have been registered");
 	}
+	
+	
+	@GetMapping("/login")
+    public String testUserAccess(@RequestBody User user) {
+		if(!repo.findByUsername(user.getUsername()).isEmpty()) {
+			System.out.print(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword()));
+			if(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword())) {
+				return "you have logged in ";
+			}
+			
+		}
+		
+        return "Login Fail";
+    }
+	
+	private List<String> getRolesByLoggedInUser(Principal principal){
+		String roles = getLoggedInUser(principal).getRoles();
+		List<String> assignRoles = Arrays.stream(roles.split(",")).collect(Collectors.toList());
+		if(assignRoles.contains("ROLE_ADMIN")) {
+			return Arrays.stream(UserConstraint.ADMIN_ACCESS).collect(Collectors.toList());
+		}
+		if(assignRoles.contains("ROLE_MODERATOR")) {
+			return Arrays.stream(UserConstraint.MODERATOR_ACCESS).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
+	}
+	
 	
 	@GetMapping("/access/{userId}/{userRole}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -73,19 +102,7 @@ public class UserController {
 			user.setRoles(newRole);
 		}
 		repo.save(user);
-		return "Hi" + user.getUsername() + "New Role Assigned to you by " + principal.getName();
-	}
-	
-	private List<String> getRolesByLoggedInUser(Principal principal){
-		String roles = getLoggedInUser(principal).getRoles();
-		List<String> assignRoles = Arrays.stream(roles.split(",")).collect(Collectors.toList());
-		if(assignRoles.contains("ROLE_ADMIN")) {
-			return Arrays.stream(UserConstraint.ADMIN_ACCESS).collect(Collectors.toList());
-		}
-		if(assignRoles.contains("ROLE_MODERATOR")) {
-			return Arrays.stream(UserConstraint.MODERATOR_ACCESS).collect(Collectors.toList());
-		}
-		return Collections.emptyList();
+		return "Hi " + user.getUsername() + " New Role Assigned to you by " + principal.getName();
 	}
 	
 	private User getLoggedInUser(Principal principal) {
