@@ -3,6 +3,7 @@ package com.ashley.service;
 
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,11 +22,14 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	private UserRepo repo;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<User> user = repo.findByUsername(username);
-        return user.map(UserUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException(username + " Not Found"));
-    }
+	public UserUserDetails loadUserByUsername(String username) {
+		Supplier<UsernameNotFoundException> s = 
+				() -> new UsernameNotFoundException(
+						"Problen during authentication!");
+		User u = repo.findByUsername(username).orElseThrow(s);
+		
+		return new UserUserDetails(u);
+	}
 	
 	
 }

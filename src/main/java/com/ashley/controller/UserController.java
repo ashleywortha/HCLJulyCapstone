@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,31 +45,36 @@ public class UserController {
 	@Autowired
 	private UserRepo repo;
 	
-//	@GetMapping("/users")
-//	public List<User> listAllUser(){
-//		return service.getAllUsers();
-//	}
-//	
-//	@GetMapping("/users/{id}")
-//	public ResponseEntity<User> getUserId(@PathVariable Integer id){
-//		Optional<User> user = service.getUserById(id);
-//		return new ResponseEntity<User>(HttpStatus.OK);
-//	}
+	@GetMapping("/view")
+	public List<User> listAllUser(){
+		return service.getAllUsers();
+	}
+	
+	@GetMapping("/view/{id}")
+	public ResponseEntity<User> getUserId(@PathVariable Integer id){
+		Optional<User> user = service.getUserById(id);
+		return new ResponseEntity<User>(HttpStatus.OK);
+	}
 	
 	@PostMapping("/register")
 	public String addUser(@RequestBody User user) {
 		user.setRoles(UserConstraint.DEFAULT_ROLE);//user
-		String encryptedPwd = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encryptedPwd);
+//		String encryptedPwd = passwordEncoder.encode(user.getPassword());
+//		user.setPassword(encryptedPwd);
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		service.addUser(user);
 		return("Hi " + user.getUsername() + " you have been registered");
 	}
 	
 	
+
 	@GetMapping("/login")
     public String testUserAccess(@RequestBody User user) {
+		System.out.println("password is: " + user.getPassword());
+		System.out.println("encoded password is: " + repo.findByUsername(user.getUsername()).get().getPassword());
+		
 		if(!repo.findByUsername(user.getUsername()).isEmpty()) {
-			System.out.print(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword()));
+			System.out.println(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword()));
 			if(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword())) {
 				return "you have logged in ";
 			}

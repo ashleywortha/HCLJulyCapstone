@@ -22,8 +22,8 @@ public class UserService{
 	@Autowired
 	RoleRepo roleRepo;
 	
-	@Autowired
-	PasswordEncoder passwordEncoder;
+//	@Autowired
+//	PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private JavaMailSender javaMailSender;
@@ -36,9 +36,6 @@ public class UserService{
 	msg.setText("Thank you " + fName + " for signing up");
 	javaMailSender.send(msg);
 }
-	
-	
-	
 	
 	public List<User> getAllUsers(){
 		return repo.findAll();
@@ -54,7 +51,6 @@ public class UserService{
 	}
 	
 	public void addUser(User user) {
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		repo.save(user);
 		sendEmail(user.getEmail(), user.getFirstName());
 	}
