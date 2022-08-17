@@ -30,29 +30,26 @@ public class ProductController {
 	}
 	
 	@GetMapping("/view/{id}")
-	public ResponseEntity<Product> getProductId(@PathVariable Integer id){
+	public Optional<Product> getProductId(@PathVariable Integer id){
 		Optional<Product> product = service.getProductById(id);
-		return new ResponseEntity<Product>(HttpStatus.OK);
+		return product;
 	}
 	
-//	@Secured("ROLE_ADMIN")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@PostMapping("/add")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String addProduct(@RequestBody Product product) {
 		service.addProduct(product);
 		return "Product" + product.getName() + " added";
 	}
 	
-//	@Secured("ROLE_ADMIN")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@DeleteMapping("/delete/{productId}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public void deleteProduct(@PathVariable int productId) {
 		service.deleteProduct(productId);
 	}
 	
-//	@Secured("ROLE_ADMIN")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	@PutMapping("/update/{productId}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public void updateProduct(@PathVariable int productId, @RequestBody Product product) {
 		service.updateProduct(productId, product);
 	}

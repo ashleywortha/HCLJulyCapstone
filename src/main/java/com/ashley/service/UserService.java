@@ -1,8 +1,13 @@
 package com.ashley.service;
 
+import java.beans.FeatureDescriptor;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,16 +27,13 @@ public class UserService{
 	@Autowired
 	RoleRepo roleRepo;
 	
-//	@Autowired
-//	PasswordEncoder passwordEncoder;
-	
 	@Autowired
 	private JavaMailSender javaMailSender;
 	
 	
 	void sendEmail(String email, String fName) {
 	SimpleMailMessage msg = new SimpleMailMessage();
-	msg.setTo(email); //change to user input email
+	msg.setTo(email); 
 	msg.setSubject("You Have Successfully Created Your Account!");
 	msg.setText("Thank you " + fName + " for signing up");
 	javaMailSender.send(msg);
@@ -58,16 +60,18 @@ public class UserService{
 	
 	public void updateUser(Integer id, User user) {
 		User userInDB = repo.findById(id).get();
-//		User userInDB = 
-//				repo.findById(id).get();
-//				userInDB.setFirstName(user.getFirstName());
-//				userInDB.setLastName(user.getLastName());
-//				userInDB.setEmail(user.getEmail());
-//				userInDB.setContact(user.getContact());
-//				userInDB.setUsername(user.getUsername());
-//				userInDB.setPassword(user.getPassword());
-//				userInDB.setSSN(user.getSSN());
-//				repo.save(userInDB);
+		String[] ignoredProperties = getNullPropertyNames(user);
+		BeanUtils.copyProperties(user, userInDB, ignoredProperties);
+		userInDB.setId(id);
+		repo.save(userInDB);
+	}
+	
+	public static String[] getNullPropertyNames(Object object) {
+		final BeanWrapper wrappedSource = new BeanWrapperImpl(object);
+		return Stream.of(wrappedSource.getPropertyDescriptors())
+				.map(FeatureDescriptor::getName)
+				.filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
+				.toArray(String[]::new);
 	}
 
 

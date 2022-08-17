@@ -46,21 +46,22 @@ public class UserController {
 	private UserRepo repo;
 	
 	@GetMapping("/view")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public List<User> listAllUser(){
 		return service.getAllUsers();
 	}
 	
 	@GetMapping("/view/{id}")
-	public ResponseEntity<User> getUserId(@PathVariable Integer id){
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public Optional<User> getUserId(@PathVariable Integer id){
 		Optional<User> user = service.getUserById(id);
-		return new ResponseEntity<User>(HttpStatus.OK);
+		return user;
+//		return new ResponseEntity<User>(HttpStatus.OK);
 	}
 	
 	@PostMapping("/register")
 	public String addUser(@RequestBody User user) {
 		user.setRoles(UserConstraint.DEFAULT_ROLE);//user
-//		String encryptedPwd = passwordEncoder.encode(user.getPassword());
-//		user.setPassword(encryptedPwd);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		service.addUser(user);
 		return("Hi " + user.getUsername() + " you have been registered");
@@ -68,21 +69,21 @@ public class UserController {
 	
 	
 
-	@GetMapping("/login")
-    public String testUserAccess(@RequestBody User user) {
-		System.out.println("password is: " + user.getPassword());
-		System.out.println("encoded password is: " + repo.findByUsername(user.getUsername()).get().getPassword());
-		
-		if(!repo.findByUsername(user.getUsername()).isEmpty()) {
-			System.out.println(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword()));
-			if(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword())) {
-				return "you have logged in ";
-			}
-			
-		}
-		
-        return "Login Fail";
-    }
+//	@GetMapping("/login")
+//    public String testUserAccess(@RequestBody User user) {
+//		System.out.println("password is: " + user.getPassword());
+//		System.out.println("encoded password is: " + repo.findByUsername(user.getUsername()).get().getPassword());
+//		
+//		if(!repo.findByUsername(user.getUsername()).isEmpty()) {
+//			System.out.println(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword()));
+//			if(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword())) {
+//				return "you have logged in ";
+//			}
+//			
+//		}
+//		
+//        return "Login Fail";
+//    }
 	
 	private List<String> getRolesByLoggedInUser(Principal principal){
 		String roles = getLoggedInUser(principal).getRoles();
@@ -115,14 +116,16 @@ public class UserController {
 		return repo.findByUsername(principal.getName()).get();
 	}
 	
-//	@DeleteMapping("/users/{userId}")
-//	public void deleteUser(@PathVariable int userId) {
-//		service.deleteUser(userId);
-//	}
-//	
-//	@PatchMapping("/users/{userId}")
-//	public void updateUser(@PathVariable int userId, @RequestBody User user) {
-//		service.updateUser(userId, user);
-//	}
+	@DeleteMapping("/delete/{userId}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public void deleteUser(@PathVariable int userId) {
+		service.deleteUser(userId);
+	}
+	
+	@PutMapping("/update/{userId}")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	public void updateUser(@PathVariable int userId, @RequestBody User user) {
+		service.updateUser(userId, user);
+	}
 
 }

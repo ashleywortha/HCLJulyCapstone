@@ -1,7 +1,6 @@
 package com.ashley.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,12 +40,8 @@ public class CapstoneConfig extends WebSecurityConfigurerAdapter{
 		
 		http.csrf().disable();
 		http.authorizeRequests()
-//		.antMatchers("/products/view").permitAll()
-//		.antMatchers("/products/**").hasRole("ROLE_ADMIN")
-		.antMatchers("/user/register").permitAll().and().authorizeRequests();
-//		.antMatchers("/user/login").permitAll()
-//		.antMatchers("/user/**").permitAll();
-//		.authenticated().and().httpBasic();
+		.antMatchers("/user/register").permitAll().and().authorizeRequests()
+		.antMatchers("/products/**").authenticated().and().httpBasic();
 	}
 	
 	@Bean
