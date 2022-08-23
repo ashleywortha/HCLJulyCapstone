@@ -10,10 +10,15 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ashley.common.UserConstraint;
 import com.ashley.model.User;
+import com.ashley.repo.AddressRepo;
 import com.ashley.repo.UserRepo;
 import com.ashley.service.UserService;
 //import com.ashley.service.UserService;
@@ -44,6 +50,7 @@ public class UserController {
 	
 	@Autowired
 	private UserRepo repo;
+	
 	
 	@GetMapping("/view")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -63,27 +70,10 @@ public class UserController {
 	public String addUser(@RequestBody User user) {
 		user.setRoles(UserConstraint.DEFAULT_ROLE);//user
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
 		service.addUser(user);
 		return("Hi " + user.getUsername() + " you have been registered");
 	}
-	
-	
-
-//	@GetMapping("/login")
-//    public String testUserAccess(@RequestBody User user) {
-//		System.out.println("password is: " + user.getPassword());
-//		System.out.println("encoded password is: " + repo.findByUsername(user.getUsername()).get().getPassword());
-//		
-//		if(!repo.findByUsername(user.getUsername()).isEmpty()) {
-//			System.out.println(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword()));
-//			if(passwordEncoder.matches(user.getPassword(), repo.findByUsername(user.getUsername()).get().getPassword())) {
-//				return "you have logged in ";
-//			}
-//			
-//		}
-//		
-//        return "Login Fail";
-//    }
 	
 	private List<String> getRolesByLoggedInUser(Principal principal){
 		String roles = getLoggedInUser(principal).getRoles();
@@ -122,10 +112,27 @@ public class UserController {
 		service.deleteUser(userId);
 	}
 	
+	//check that the logged in user is the one editing their info
 	@PutMapping("/update/{userId}")
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public void updateUser(@PathVariable int userId, @RequestBody User user) {
 		service.updateUser(userId, user);
+	}
+	
+	@PutMapping("/update")
+	public String userUpdateUser(@RequestBody User user) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(!(authentication instanceof AnonymousAuthenticationToken)) {
+			String currentUsername = authentication.getPrincipal().toString();
+			
+			int userid = repo.findByUsername(currentUsername).get().getId();
+			service.updateUser(userid, user);
+			return "user updated";
+		}
+		
+		return "not logged in";
 	}
 
 }

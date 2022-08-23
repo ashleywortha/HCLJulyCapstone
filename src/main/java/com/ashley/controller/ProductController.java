@@ -24,6 +24,7 @@ import com.ashley.service.ProductService;
 public class ProductController {
 	@Autowired
 	private ProductService service;
+	
 	@GetMapping("/view")
 	public List<Product> listAllProduct(){
 		return service.getAllProducts();
@@ -31,7 +32,7 @@ public class ProductController {
 	
 	@GetMapping("/view/{id}")
 	public Optional<Product> getProductId(@PathVariable Integer id){
-		Optional<Product> product = service.getProductById(id);
+		Optional<Product> product = service.getProductsById(id);
 		return product;
 	}
 	

@@ -36,12 +36,14 @@ public class CapstoneConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception{
 		http.formLogin().defaultSuccessUrl("/main", true);
-//		http.authorizeRequests().anyRequest().authenticated();
 		
 		http.csrf().disable();
 		http.authorizeRequests()
 		.antMatchers("/user/register").permitAll().and().authorizeRequests()
-		.antMatchers("/products/**").authenticated().and().httpBasic();
+		.antMatchers("/products/**").authenticated()
+		.antMatchers("/cart/**").authenticated()
+		.and().httpBasic();
+	
 	}
 	
 	@Bean

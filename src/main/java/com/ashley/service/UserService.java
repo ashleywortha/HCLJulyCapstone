@@ -3,6 +3,7 @@ package com.ashley.service;
 import java.beans.FeatureDescriptor;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.beans.BeanUtils;
@@ -14,8 +15,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ashley.repo.AddressRepo;
 import com.ashley.repo.RoleRepo;
 import com.ashley.repo.UserRepo;
+import com.ashley.model.Address;
 import com.ashley.model.User;
 
 
@@ -26,6 +29,9 @@ public class UserService{
 	
 	@Autowired
 	RoleRepo roleRepo;
+	
+	@Autowired
+	private AddressRepo aRepo;
 	
 	@Autowired
 	private JavaMailSender javaMailSender;

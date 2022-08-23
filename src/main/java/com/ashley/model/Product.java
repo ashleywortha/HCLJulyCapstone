@@ -11,6 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,6 +35,8 @@ public class Product {
 	private double weight;
 	private int quantity;
 	
+	//Many to many and one to many causing this error ugh
+	@JsonIgnore
 	@ManyToMany(mappedBy="products")
 	private Set<Order> orders = new HashSet<Order>();
 	

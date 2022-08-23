@@ -24,9 +24,12 @@ public class ProductService {
 		return repo.findAll();
 	}
 	
-	public Optional<Product> getProductById(int id){
+	public Optional<Product> getProductsById(Integer id) {
 		return repo.findById(id);
 	}
+//	public Product getProductById(int id){
+//		return repo.findById(id);
+//	}
 	
 	public void deleteProduct(Integer id) {
 		repo.deleteById(id);
@@ -49,7 +52,9 @@ public class ProductService {
 		final BeanWrapper wrappedSource = new BeanWrapperImpl(object);
 		return Stream.of(wrappedSource.getPropertyDescriptors())
 				.map(FeatureDescriptor::getName)
-				.filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null || wrappedSource.getPropertyValue(propertyName).equals(0.0))
+				.filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null 
+				|| wrappedSource.getPropertyValue(propertyName).equals(0.0)
+				 || wrappedSource.getPropertyValue(propertyName).equals(0))
 				.toArray(String[]::new);
 	}
 }

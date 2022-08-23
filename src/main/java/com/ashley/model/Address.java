@@ -3,6 +3,7 @@ package com.ashley.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,9 +32,9 @@ public class Address{
 	private String zipcode;
 	private String country;
 	
-//	@ManyToOne(cascade = CascadeType.ALL)
-//	@JoinColumn(name="userId")
-//	private User user;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name="userId", nullable = false)
+	private User user;
 	
 
 }

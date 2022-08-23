@@ -1,25 +1,34 @@
 package com.ashley.model;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+//@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -35,12 +44,20 @@ public class Order {
 	private String shippingAddress;
 	private String billingAddress;
 	
-	//need to add a way to store user payment information?
+	//add many to one relationship one user can have many orders
+//	private int userId;
+//	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name="userId", nullable = false)
+	private User user;
+	
+	
 	@ManyToMany(cascade= {CascadeType.ALL})
 	@JoinTable(name="ORDER_PRODUCT",
 				joinColumns= {@JoinColumn(name="ORDER_ID")},
 				inverseJoinColumns= {@JoinColumn(name="PRODUCT_ID")})
 	private Set<Product> products = new HashSet<>();
+
 						
 	
 
